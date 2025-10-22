@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Coș de cumpărături</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <div class="nav">
+    <a href="/"><img src="/assets/logo.png" alt="Atelier"></a>
+    <div style="display:flex;gap:24px;align-items:center">
+      <a href="/stoc.html">Stoc</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/cart.html">Coș de cumpărături</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Coșul tău</h1>
+  <div id="cart-container"></div>
+</section>
+
+<footer>© Atelier Studio Design by Loredana Camelia</footer>
+
+<script>
+const el = document.getElementById("cart-container");
+const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+if (cart.length === 0) {
+  el.innerHTML = "<p>Coșul este gol.</p>";
+} else {
+  let total = 0;
+  el.innerHTML = "<ul style='list-style:none;padding:0'>" + 
+    cart.map(item => {
+      total += item.price * item.qty;
+      return `<li style='margin:12px 0'>${item.name} × ${item.qty} — <strong>${(item.price*item.qty).toLocaleString("ro-RO")} lei</strong></li>`;
+    }).join("") + 
+    `</ul><h3>Total: ${total.toLocaleString("ro-RO")} lei</h3>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Administrare produse - Atelier Studio Design</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body{background:#0e0e0e;color:#fff;font-family:"Lato",sans-serif}
+    form{max-width:650px;margin:40px auto;background:#181818;padding:28px;
+         border-radius:16px;box-shadow:0 0 20px rgba(0,0,0,0.4)}
+    input,textarea,select{width:100%;margin-bottom:14px;padding:10px;
+         border:1px solid #333;border-radius:8px;background:#111;color:#fff}
+    label{color:#c4a64f;font-weight:bold;margin-top:8px;display:block}
+    button{background:#c4a64f;border:none;padding:12px 18px;border-radius:8px;
+         cursor:pointer;font-weight:bold;font-size:1rem}
+    h1{text-align:center;color:#c4a64f}
+    .msg{text-align:center;margin-top:10px;font-weight:600}
+  </style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <a href="/"><img src="/assets/logo.png" alt="Atelier Studio Design"></a>
+    <div style="display:flex;gap:24px;align-items:center">
+      <a href="/stoc.html">Stoc</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/cart.html">Coș de cumpărături</a>
+    </div>
+  </div>
+</header>
+
+<h1>Adaugă produs nou</h1>
+
+<form id="form" enctype="multipart/form-data">
+  <label>Nume produs</label>
+  <input type="text" name="name" required>
+
+  <label>Slug (ex: rochie-elegance-satinata)</label>
+  <input type="text" name="slug" required>
+
+  <label>Preț (lei)</label>
+  <input type="number" name="price" required>
+
+  <label>Stoc</label>
+  <input type="number" name="stock" value="1">
+
+  <label>Categorie</label>
+  <select name="category" required>
+    <option value="seara">Rochie de seară</option>
+    <option value="mireasa">Rochie de mireasă</option>
+    <option value="gala">Rochie de gală</option>
+    <option value="couture">Couture</option>
+  </select>
+
+  <label>Imagini produs (poți selecta mai multe)</label>
+  <input type="file" name="images" accept="image/*" multiple required>
+
+  <label>Descriere scurtă</label>
+  <textarea name="shortDesc" rows="2"></textarea>
+
+  <label>Descriere completă</label>
+  <textarea name="description" rows="4"></textarea>
+
+  <button type="submit">Adaugă produs</button>
+  <div class="msg" id="msg"></div>
+</form>
+
+<script>
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById("msg");
+  msg.textContent = "Se încarcă produsul...";
+  msg.style.color = "#c4a64f";
+
+  const formData = new FormData(e.target);
+  try {
+    const res = await fetch("/api/products", { method: "POST", body: formData });
+
+    if (res.ok) {
+      msg.textContent = "Produs adăugat cu succes!";
+      msg.style.color = "lightgreen";
+      e.target.reset();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      msg.textContent = "Eroare: " + (err.error || "necunoscută");
+      msg.style.color = "red";
+    }
+  } catch {
+    msg.textContent = "Eroare de conexiune cu serverul.";
+    msg.style.color = "red";
+  }
+});
+</script>
+
+<footer>© Atelier Studio Design by Loredana Camelia</footer>
+</body>
+</html>
