@@ -1,34 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact - Atelier Studio Design</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #F6C1C6;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 10px 40px;
+    }
+
+    header img {
+      height: 60px;
+    }
+
+    nav a {
+      margin: 0 15px;
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    nav a:hover {
+      color: #B87BA5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4b2b2b;
+      margin-top: 30px;
+    }
+
+    .contact-container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    button {
+      background-color: #C79A3B;
+      border: none;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .contact-info {
+      text-align: center;
+      color: #3b2a2a;
+      margin-top: 25px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #3b2a2a;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+      nav {
+        margin-top: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="nav">
-    <a href="/"><img src="/assets/logo.png" alt="Atelier"></a>
-    <div style="display:flex;gap:24px;align-items:center">
-      <a href="/stoc.html">Stoc</a>
-      <a href="/contact.html">Contact</a>
-      <a href="/cart.html">Coș de cumpărături</a>
+  <header>
+    <img src="assets/logo.png" alt="Atelier Studio Design Logo">
+    <nav>
+      <a href="stoc.html">Stoc</a>
+      <a href="colectie_noua.html">Colecție nouă</a>
+      <a href="contact.html">Contact</a>
+      <a href="cart.html">Coș</a>
+    </nav>
+  </header>
+
+  <h1>Contactează-ne</h1>
+
+  <div class="contact-container">
+    <form id="contactForm">
+      <input type="text" id="name" placeholder="Nume complet" required>
+      <input type="email" id="email" placeholder="Adresă de email" required>
+      <textarea id="message" placeholder="Mesajul tău..." required></textarea>
+      <button type="submit">Trimite mesajul</button>
+    </form>
+
+    <div class="contact-info">
+      <p><strong>Telefon:</strong> 0722 123 456</p>
+      <p><strong>Email:</strong> atelierstudio@gmail.com</p>
+      <p><strong>Adresă:</strong> Galați, România</p>
     </div>
   </div>
-</header>
 
-<section class="hero">
-  <h1>Contact</h1>
-  <p>Pentru programări și comenzi personalizate:</p>
-  <div style="margin-top:20px;line-height:1.8">
-    <p><strong>Email:</strong> contact@atelierstudiodesign.ro</p>
-    <p><strong>Telefon:</strong> +40 7xx xxx xxx</p>
-    <p><strong>Adresa:</strong> Str. Exemplu 12, Galați, România</p>
-    <p><strong>Program:</strong> Luni - Sâmbătă: 10:00 - 18:00</p>
-  </div>
-</section>
+  <footer>© 2025 Atelier Studio Design — Toate drepturile rezervate</footer>
 
-<footer>© Atelier Studio Design by Loredana Camelia</footer>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', e => {
+      e.preventDefault();
+      alert('Mesajul a fost trimis cu succes!');
+      e.target.reset();
+    });
+  </script>
 </body>
 </html>

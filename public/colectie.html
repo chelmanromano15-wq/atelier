@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colecție Nouă - Atelier Studio Design</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #F6C1C6;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      padding: 15px 50px;
+    }
+
+    header img {
+      height: 80px;
+    }
+
+    nav a {
+      margin-left: 25px;
+      text-decoration: none;
+      color: #000;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    nav a:hover {
+      color: #C79A3B;
+    }
+
+    h1 {
+      text-align: center;
+      color: #5a3b3b;
+      margin-top: 30px;
+    }
+
+    .product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 40px;
+    }
+
+    .product-card {
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+    }
+
+    .product-card h3 {
+      color: #3b2a2a;
+      margin: 10px 0 5px;
+    }
+
+    .product-card p {
+      color: #5a3b3b;
+      margin: 5px 0;
+    }
+
+    .price {
+      color: #C79A3B;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #3b2a2a;
+      background-color: transparent;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav a {
+        margin: 10px;
+        display: inline-block;
+      }
+
+      .product-card img {
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.png" alt="Atelier Studio Design Logo">
+    <nav>
+      <a href="stoc.html">Stoc</a>
+      <a href="colectie.html">Colecție nouă</a>
+      <a href="contact.html">Contact</a>
+      <a href="cart.html">Coș de cumpărături</a>
+    </nav>
+  </header>
+
+  <h1>Colecție Nouă</h1>
+  <div id="products" class="product-container"></div>
+
+  <footer>
+    © 2025 Atelier Studio Design — Toate drepturile rezervate
+  </footer>
+
+  <script>
+    async function loadCollection() {
+      try {
+        const response = await fetch('/api/newcollection');
+        const products = await response.json();
+
+        const container = document.getElementById('products');
+        container.innerHTML = "";
+
+        products.forEach(p => {
+          const card = document.createElement('div');
+          card.className = "product-card";
+          const imgSrc = p.images && p.images.length > 0 ? p.images[0] : "assets/default.jpg";
+
+          card.innerHTML = `
+            <img src="${imgSrc}" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <p>Cod articol: ${p.code}</p>
+            <p class="price">${p.price.toLocaleString()} lei</p>
+          `;
+
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Eroare la încărcarea produselor din colecția nouă:", err);
+      }
+    }
+
+    loadCollection();
+  </script>
+</body>
+</html>

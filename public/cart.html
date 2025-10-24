@@ -1,45 +1,260 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Coș de cumpărături</title>
-  <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coș de cumpărături - Atelier Studio Design</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #F6C1C6;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      padding: 15px 50px;
+    }
+
+    header img {
+      height: 80px;
+    }
+
+    nav a {
+      margin-left: 25px;
+      text-decoration: none;
+      color: #000;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    nav a:hover {
+      color: #C79A3B;
+    }
+
+    h1 {
+      text-align: center;
+      color: #5a3b3b;
+      margin-top: 30px;
+    }
+
+    .cart-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+    .cart-item img {
+      width: 100px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .cart-info {
+      flex: 1;
+      margin-left: 15px;
+    }
+
+    .cart-info h3 {
+      margin: 0;
+      color: #3b2a2a;
+    }
+
+    .cart-info p {
+      margin: 5px 0;
+    }
+
+    .remove-btn {
+      background: #a33;
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 20px;
+      color: #3b2a2a;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .empty {
+      text-align: center;
+      font-size: 18px;
+      color: #3b2a2a;
+    }
+
+    form {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    form input, form textarea {
+      width: 80%;
+      max-width: 400px;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      font-family: "Poppins", sans-serif;
+    }
+
+    form button {
+      background: #C79A3B;
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    form button:hover {
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #3b2a2a;
+    }
+
+    @media (max-width: 600px) {
+      .cart-item {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .cart-info {
+        margin-left: 0;
+      }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="nav">
-    <a href="/"><img src="/assets/logo.png" alt="Atelier"></a>
-    <div style="display:flex;gap:24px;align-items:center">
-      <a href="/stoc.html">Stoc</a>
-      <a href="/contact.html">Contact</a>
-      <a href="/cart.html">Coș de cumpărături</a>
-    </div>
-  </div>
-</header>
+  <header>
+    <img src="assets/logo.png" alt="Atelier Studio Design Logo">
+    <nav>
+      <a href="stoc.html">Stoc</a>
+      <a href="colectie.html">Colecție nouă</a>
+      <a href="contact.html">Contact</a>
+      <a href="cart.html">Coș de cumpărături</a>
+    </nav>
+  </header>
 
-<section class="hero">
-  <h1>Coșul tău</h1>
-  <div id="cart-container"></div>
-</section>
+  <h1>Coș de cumpărături</h1>
+  <div id="cartContainer" class="cart-container"></div>
 
-<footer>© Atelier Studio Design by Loredana Camelia</footer>
+  <form id="orderForm">
+    <h2>Trimite comanda</h2>
+    <input type="text" id="name" placeholder="Nume complet" required><br>
+    <input type="tel" id="phone" placeholder="Telefon" required><br>
+    <textarea id="address" placeholder="Adresă completă de livrare" required></textarea><br>
+    <button type="submit">Trimite comanda</button>
+  </form>
 
-<script>
-const el = document.getElementById("cart-container");
-const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  <footer>© 2025 Atelier Studio Design — Toate drepturile rezervate</footer>
 
-if (cart.length === 0) {
-  el.innerHTML = "<p>Coșul este gol.</p>";
-} else {
-  let total = 0;
-  el.innerHTML = "<ul style='list-style:none;padding:0'>" + 
-    cart.map(item => {
-      total += item.price * item.qty;
-      return `<li style='margin:12px 0'>${item.name} × ${item.qty} — <strong>${(item.price*item.qty).toLocaleString("ro-RO")} lei</strong></li>`;
-    }).join("") + 
-    `</ul><h3>Total: ${total.toLocaleString("ro-RO")} lei</h3>`;
-}
-</script>
+  <script>
+    function loadCart() {
+      const container = document.getElementById('cartContainer');
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = '<p class="empty">Coșul este gol.</p>';
+        document.getElementById('orderForm').style.display = 'none';
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach((p, index) => {
+        total += p.price;
+        const item = document.createElement('div');
+        item.className = 'cart-item';
+
+        item.innerHTML = `
+          <img src="${p.images && p.images.length > 0 ? p.images[0] : 'assets/default.jpg'}" alt="${p.name}">
+          <div class="cart-info">
+            <h3>${p.name}</h3>
+            <p>Cod articol: ${p.code}</p>
+            <p>Preț: ${p.price} lei</p>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${index})">Șterge</button>
+        `;
+
+        container.appendChild(item);
+      });
+
+      const totalDiv = document.createElement('div');
+      totalDiv.className = 'total';
+      totalDiv.textContent = `Total: ${total.toLocaleString()} lei`;
+      container.appendChild(totalDiv);
+    }
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      if (cart.length === 0) {
+        alert("Coșul este gol!");
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+      const order = { name, phone, address, items: cart, total };
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+      });
+
+      if (res.ok) {
+        alert("Comanda a fost trimisă cu succes!");
+        localStorage.removeItem('cart');
+        window.location.reload();
+      } else {
+        alert("A apărut o eroare la trimiterea comenzii.");
+      }
+    });
+
+    loadCart();
+  </script>
 </body>
 </html>

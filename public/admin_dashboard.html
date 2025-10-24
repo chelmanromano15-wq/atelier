@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panou administrativ - Atelier Studio Design</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #F6C1C6;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 10px 40px;
+    }
+
+    header img {
+      height: 60px;
+    }
+
+    nav a {
+      margin: 0 15px;
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #B87BA5;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #4b2b2b;
+    }
+
+    form {
+      background-color: rgba(255,255,255,0.7);
+      width: 90%;
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .image-spot {
+      width: 100%;
+      aspect-ratio: 1;
+      background: rgba(255,255,255,0.6);
+      border: 2px dashed #b87ba5;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .image-spot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+    }
+
+    #addStockBtn { background-color: #C79A3B; }
+    #addCollectionBtn { background-color: #B87BA5; }
+
+    .product-list {
+      max-width: 900px;
+      margin: 30px auto;
+      display: grid;
+      gap: 15px;
+    }
+
+    .product-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.6);
+      border-radius: 10px;
+      padding: 10px 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .product-info img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .actions button {
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .edit-btn { background-color: #C79A3B; margin-right: 10px; }
+    .delete-btn { background-color: #a33; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.png" alt="Atelier Studio Design Logo" />
+    <nav>
+      <a href="stoc.html">Stoc</a>
+      <a href="colectie_noua.html">Colecție nouă</a>
+      <a href="admin_orders.html">Comenzi</a>
+    </nav>
+  </header>
+
+  <h1>Panou administrativ</h1>
+
+  <form id="productForm">
+    <h2 id="formTitle">Adaugă produs în stoc</h2>
+    <input type="text" id="name" placeholder="Nume rochie" required />
+    <input type="number" id="price" placeholder="Preț (lei)" required />
+    <input type="text" id="code" placeholder="Cod articol" required />
+    <input type="text" id="bust" placeholder="Bust (cm)" />
+    <input type="text" id="waist" placeholder="Talie (cm)" />
+    <input type="text" id="length" placeholder="Lungime (cm)" />
+
+    <div class="images-grid" id="imageSpots">
+      <div class="image-spot" data-index="0"><span>+</span></div>
+      <div class="image-spot" data-index="1"><span>+</span></div>
+      <div class="image-spot" data-index="2"><span>+</span></div>
+      <div class="image-spot" data-index="3"><span>+</span></div>
+      <div class="image-spot" data-index="4"><span>+</span></div>
+    </div>
+
+    <div class="buttons">
+      <button type="submit" id="addStockBtn">Adaugă în stoc</button>
+      <button type="button" id="addCollectionBtn">Adaugă în colecția nouă</button>
+    </div>
+  </form>
+
+  <h2 style="text-align:center;">Produse existente</h2>
+  <div id="productList" class="product-list"></div>
+
+  <script>
+    let editId = null;
+    const imageSpots = document.querySelectorAll(".image-spot");
+    const images = [];
+
+    imageSpots.forEach((spot, index) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.style.display = "none";
+      input.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            spot.innerHTML = `<img src="${reader.result}" alt="preview">`;
+            images[index] = reader.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      spot.appendChild(input);
+      spot.addEventListener("click", () => input.click());
+    });
+
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const product = {
+        name: document.getElementById("name").value,
+        price: document.getElementById("price").value,
+        code: document.getElementById("code").value,
+        bust: document.getElementById("bust").value,
+        waist: document.getElementById("waist").value,
+        length: document.getElementById("length").value,
+        images
+      };
+
+      const url = editId ? `/api/products/${editId}` : "/api/products";
+      const method = editId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product)
+      });
+
+      if (res.ok) {
+        alert(editId ? "Produs actualizat!" : "Produs adăugat în stoc!");
+        resetForm();
+        loadProducts();
+      } else {
+        alert("Eroare la salvare.");
+      }
+    });
+
+    document.getElementById("addCollectionBtn").addEventListener("click", async () => {
+      const product = {
+        name: document.getElementById("name").value,
+        price: document.getElementById("price").value,
+        code: document.getElementById("code").value,
+        bust: document.getElementById("bust").value,
+        waist: document.getElementById("waist").value,
+        length: document.getElementById("length").value,
+        images
+      };
+
+      const res = await fetch("/api/collection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product)
+      });
+
+      if (res.ok) {
+        alert("Produs adăugat în colecția nouă!");
+        resetForm();
+      } else {
+        alert("Eroare la adăugare în colecția nouă.");
+      }
+    });
+
+    async function loadProducts() {
+      const container = document.getElementById("productList");
+      container.innerHTML = "<p style='text-align:center;'>Se încarcă produsele...</p>";
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      container.innerHTML = "";
+      if (!data.length) {
+        container.innerHTML = "<p style='text-align:center;'>Nu există produse în stoc.</p>";
+        return;
+      }
+
+      data.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        const img = p.images && p.images.length ? p.images[0] : "assets/default.jpg";
+        card.innerHTML = `
+          <div class="product-info">
+            <img src="${img}" alt="${p.name}">
+            <div>
+              <h4>${p.name}</h4>
+              <p>Cod: ${p.code}</p>
+              <p>Preț: ${p.price} lei</p>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="edit-btn" onclick="editProduct('${p._id}')">Editează</button>
+            <button class="delete-btn" onclick="deleteProduct('${p._id}')">Șterge</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm("Sigur dorești să ștergi produsul?")) return;
+      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      loadProducts();
+    }
+
+    async function editProduct(id) {
+      const res = await fetch(`/api/products`);
+      const data = await res.json();
+      const prod = data.find(p => p._id === id);
+      if (!prod) return;
+      document.getElementById("formTitle").textContent = "Editează produs";
+      document.getElementById("name").value = prod.name;
+      document.getElementById("price").value = prod.price;
+      document.getElementById("code").value = prod.code;
+      document.getElementById("bust").value = prod.bust || "";
+      document.getElementById("waist").value = prod.waist || "";
+      document.getElementById("length").value = prod.length || "";
+      images.length = 0;
+      prod.images.forEach((img, i) => {
+        const spot = document.querySelectorAll(".image-spot")[i];
+        spot.innerHTML = `<img src="${img}" alt="preview">`;
+        images[i] = img;
+      });
+      editId = id;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function resetForm() {
+      document.getElementById("formTitle").textContent = "Adaugă produs în stoc";
+      document.getElementById("productForm").reset();
+      document.querySelectorAll(".image-spot").forEach(s => (s.innerHTML = "<span>+</span>"));
+      images.length = 0;
+      editId = null;
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>

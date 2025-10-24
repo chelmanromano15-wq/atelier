@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comenzi - Atelier Studio Design</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #F6C1C6;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      padding: 15px 50px;
+    }
+
+    header img {
+      height: 70px;
+    }
+
+    nav a {
+      margin-left: 25px;
+      text-decoration: none;
+      color: #000;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    nav a:hover {
+      color: #C79A3B;
+    }
+
+    h1 {
+      text-align: center;
+      color: #5a3b3b;
+      margin-top: 25px;
+    }
+
+    .orders-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .order {
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .order-header h2 {
+      color: #3b2a2a;
+      font-size: 20px;
+    }
+
+    .order-header span {
+      color: #5a3b3b;
+      font-size: 14px;
+    }
+
+    .client-info {
+      background: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+    }
+
+    .client-info p {
+      margin: 4px 0;
+      color: #3b2a2a;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .product-card {
+      background: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .product-card h4 {
+      margin: 8px 0 4px;
+      color: #3b2a2a;
+    }
+
+    .product-card p {
+      margin: 3px 0;
+      color: #5a3b3b;
+    }
+
+    .total {
+      text-align: right;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #3b2a2a;
+      font-size: 18px;
+    }
+
+    .delete-btn {
+      display: inline-block;
+      margin-top: 10px;
+      background: #a33;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      opacity: 0.85;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #3b2a2a;
+      background: transparent;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav a {
+        margin: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.png" alt="Atelier Studio Design Logo">
+    <nav>
+      <a href="admin_dashboard.html">Dashboard</a>
+      <a href="admin_orders.html">Comenzi</a>
+      <a href="stoc.html">Site public</a>
+    </nav>
+  </header>
+
+  <h1>Comenzi primite</h1>
+
+  <div id="ordersContainer" class="orders-container"></div>
+
+  <footer>© 2025 Atelier Studio Design — Administrare comenzi</footer>
+
+  <script>
+    async function loadOrders() {
+      const container = document.getElementById('ordersContainer');
+      container.innerHTML = '<p style="text-align:center;">Se încarcă comenzile...</p>';
+
+      try {
+        const res = await fetch('/api/orders');
+        const orders = await res.json();
+
+        if (!orders.length) {
+          container.innerHTML = '<p style="text-align:center;">Nu există comenzi momentan.</p>';
+          return;
+        }
+
+        container.innerHTML = "";
+        orders.forEach(order => {
+          const orderDiv = document.createElement('div');
+          orderDiv.className = 'order';
+
+          const date = new Date(order.date).toLocaleString('ro-RO');
+
+          orderDiv.innerHTML = `
+            <div class="order-header">
+              <h2>Comandă #${order._id.slice(-6)}</h2>
+              <span>${date}</span>
+            </div>
+            <div class="client-info">
+              <p><strong>Nume client:</strong> ${order.name}</p>
+              <p><strong>Telefon:</strong> ${order.phone}</p>
+              <p><strong>Adresă:</strong> ${order.address}</p>
+            </div>
+            <div class="products" id="products-${order._id}"></div>
+            <div class="total">Total: ${order.total.toLocaleString()} lei</div>
+            <button class="delete-btn" onclick="deleteOrder('${order._id}')">Șterge comanda</button>
+          `;
+
+          const productsDiv = orderDiv.querySelector(`#products-${order._id}`);
+          order.items.forEach(prod => {
+            const pCard = document.createElement('div');
+            pCard.className = 'product-card';
+            const imgSrc = prod.images && prod.images.length ? prod.images[0] : "assets/default.jpg";
+            pCard.innerHTML = `
+              <img src="${imgSrc}" alt="${prod.name}">
+              <h4>${prod.name}</h4>
+              <p>Cod: ${prod.code}</p>
+              <p>Preț: ${prod.price} lei</p>
+            `;
+            productsDiv.appendChild(pCard);
+          });
+
+          container.appendChild(orderDiv);
+        });
+      } catch (err) {
+        console.error("Eroare la încărcarea comenzilor:", err);
+        container.innerHTML = '<p style="text-align:center;color:red;">Eroare la încărcarea comenzilor.</p>';
+      }
+    }
+
+    async function deleteOrder(id) {
+      if (!confirm("Sigur dorești să ștergi această comandă?")) return;
+
+      try {
+        const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          alert("Comanda a fost ștearsă.");
+          loadOrders();
+        } else {
+          alert("Eroare la ștergerea comenzii.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Eroare la ștergerea comenzii.");
+      }
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>

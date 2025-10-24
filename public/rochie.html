@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalii Rochie - Atelier Studio Design</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #F6C1C6;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 10px 40px;
+    }
+    header img {
+      height: 60px;
+    }
+    nav a {
+      margin: 0 15px;
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: #B87BA5;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    .gallery {
+      flex: 1;
+      min-width: 350px;
+      text-align: center;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      object-fit: cover;
+    }
+    .thumbs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .thumbs img {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .thumbs img:hover {
+      border-color: #B87BA5;
+    }
+    .details {
+      flex: 1;
+      min-width: 300px;
+    }
+    h2 {
+      color: #4b2b2b;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #333;
+      margin: 5px 0;
+    }
+    .price {
+      font-size: 1.3rem;
+      color: #C79A3B;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #C79A3B;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.png" alt="Atelier Studio Design Logo">
+    <nav>
+      <a href="stoc.html">Stoc</a>
+      <a href="colectie_noua.html">Colecție nouă</a>
+      <a href="contact.html">Contact</a>
+      <a href="cart.html">Coș</a>
+    </nav>
+  </header>
+
+  <div class="container" id="productContainer">
+    <p style="text-align:center;width:100%;">Se încarcă detaliile rochiei...</p>
+  </div>
+
+  <script>
+    const container = document.getElementById("productContainer");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    async function loadProduct() {
+      if (!id) {
+        container.innerHTML = "<p>Produsul nu a fost găsit.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/products/${id}`);
+        if (!res.ok) throw new Error();
+        const p = await res.json();
+
+        const mainImg = p.images && p.images.length ? p.images[0] : "assets/default.jpg";
+        let thumbs = "";
+        p.images.forEach(img => {
+          thumbs += `<img src="${img}" onclick="changeImage('${img}')">`;
+        });
+
+        container.innerHTML = `
+          <div class="gallery">
+            <img id="mainImage" src="${mainImg}" alt="${p.name}">
+            <div class="thumbs">${thumbs}</div>
+          </div>
+          <div class="details">
+            <h2>${p.name}</h2>
+            <p class="price">${p.price} lei</p>
+            <p><strong>Cod:</strong> ${p.code}</p>
+            ${p.bust ? `<p><strong>Bust:</strong> ${p.bust} cm</p>` : ""}
+            ${p.waist ? `<p><strong>Talie:</strong> ${p.waist} cm</p>` : ""}
+            ${p.length ? `<p><strong>Lungime:</strong> ${p.length} cm</p>` : ""}
+            <button onclick="addToCart('${p._id}', '${p.name}', ${p.price}, '${mainImg}')">Adaugă în coș</button>
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = "<p>Eroare la încărcarea produsului.</p>";
+      }
+    }
+
+    function changeImage(src) {
+      document.getElementById("mainImage").src = src;
+    }
+
+    function addToCart(id, name, price, image) {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      cart.push({ id, name, price, image });
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Produs adăugat în coș!");
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>
